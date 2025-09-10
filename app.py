@@ -14,7 +14,7 @@ from sklearn.impute import SimpleImputer
 # ===============================
 # 2. Load dataset
 # ===============================
-file_path = "/content/medicine_with_expiry.csv"   # <-- update path if needed
+file_path = "medicine_with_expiry.csv"
 df = pd.read_csv(file_path)
 
 # ===============================

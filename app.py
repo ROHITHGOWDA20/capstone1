@@ -9,14 +9,12 @@ from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.impute import SimpleImputer
 
-# ===============================
-# 1. Load dataset
-# ===============================
+
 @st.cache_data
 def load_data():
     df = pd.read_csv("medicine_with_expiry.csv")
 
-    # Clean columns
+   
     df.columns = (
         df.columns
         .str.strip()
@@ -25,15 +23,15 @@ def load_data():
     )
     df = df.rename(columns={"Storage Temperature (CC)": "Storage Temperature (C)"})
 
-    # Handle missing
+  
     df["Active Ingredient"] = df["Active Ingredient"].fillna("Unknown")
     df["Disease/Use Case"] = df["Disease/Use Case"].fillna("Unknown")
 
-    # Encode labels
+
     le = LabelEncoder()
     y = le.fit_transform(df["Safe/Not Safe"])
 
-    # Numeric features
+
     numeric_cols = [
         "Days Until Expiry",
         "Storage Temperature (C)",
@@ -53,9 +51,7 @@ def load_data():
 
 df, X, y, le, numeric_cols = load_data()
 
-# ===============================
-# 2. Preprocessor + Model
-# ===============================
+
 numeric_transformer = Pipeline(steps=[
     ("imputer", SimpleImputer(strategy="median")),
     ("scaler", StandardScaler())
@@ -79,12 +75,10 @@ X_train, X_test, y_train, y_test = train_test_split(
 )
 model.fit(X_train, y_train)
 
-# ===============================
-# 3. Streamlit UI
-# ===============================
+
 st.title("💊 Medicine Safety Prediction System")
 
-# User inputs
+
 user_disease = st.text_input("Enter Disease/Use Case")
 user_tablet = st.text_input("Enter Tablet (Active Ingredient)")
 
@@ -94,7 +88,7 @@ for col in numeric_cols:
     user_features[col] = val
 
 if st.button("Predict Safety"):
-    # Build input row
+ 
     input_data = {
         "Active Ingredient": user_tablet,
         "Disease/Use Case": user_disease
@@ -110,9 +104,7 @@ if st.button("Predict Safety"):
     st.subheader("✅ Prediction Result")
     st.write(result)
 
-    # ===============================
-    # 4. Safety Rules
-    # ===============================
+ 
     SAFETY_RULES = {
         "Days Until Expiry": {"min": 30, "message": "expiry is too close. Suggest ≥ 30 days shelf life."},
         "Storage Temperature (C)": {"range": (15, 30), "message": "temperature out of safe range (15–30°C)."},
